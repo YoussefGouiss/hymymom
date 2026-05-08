@@ -1,0 +1,334 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Manrope:wght@400;600;800&display=swap');
+
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-secondary-fixed-dim: #c7d6e8;
+  --color-on-tertiary: #fcf7ff;
+  --color-surface-container-high: var(--surface-container-high);
+  --color-outline: #747c80;
+  --color-primary-fixed: #a0cdfc;
+  --color-primary-fixed-dim: #93c0ee;
+  --color-error-container: #fa746f;
+  --color-surface: var(--surface);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-surface-bright: var(--surface);
+  --color-error: #a83836;
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-on-secondary-fixed-variant: #4f5d6d;
+  --color-on-primary-fixed: #003151;
+  --color-tertiary-container: var(--tertiary-container);
+  --color-surface-tint: var(--primary);
+  --color-on-error: #fff7f6;
+  --color-primary: var(--primary);
+  --color-baby-blue: var(--baby-blue);
+  --color-cloud-white: var(--cloud-white);
+  --color-surface-dim: #d4dbdf;
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-tertiary-dim: #524e78;
+  --color-secondary-container: var(--secondary-container);
+  --color-error-dim: #67040d;
+  --color-primary-container: var(--primary-container);
+  --color-tertiary-fixed-dim: #c3bfef;
+  --color-secondary-fixed: #d5e4f7;
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary-container: #46436b;
+  --color-inverse-primary: #a0cdfc;
+  --color-on-background: var(--on-surface);
+  --color-primary-dim: var(--primary-dim);
+  --color-on-secondary-container: #455362;
+  --color-on-primary-fixed-variant: #1b4e76;
+  --color-on-primary-container: #0d456d;
+  --color-on-tertiary-fixed: #323057;
+  --color-on-secondary-fixed: #33414f;
+  --color-on-error-container: #6e0a12;
+  --color-surface-container-low: var(--surface-container-low);
+  --color-inverse-surface: #0b0f10;
+  --color-surface-container: var(--surface-container);
+  --color-on-surface: var(--on-surface);
+  --color-inverse-on-surface: #9a9d9f;
+  --color-on-primary: var(--on-primary);
+  --color-background: var(--background);
+  --color-secondary-dim: #465464;
+  --color-outline-variant: var(--outline-variant);
+  --color-surface-variant: #dce4e8;
+  --color-on-secondary: #f7f9ff;
+  --color-tertiary-fixed: #d1ccfd;
+  --color-secondary: var(--secondary);
+  --color-on-tertiary-fixed-variant: #4f4c75;
+
+  --radius-DEFAULT: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+
+  --font-headline: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Inter", sans-serif;
+
+  --font-size-xs: var(--text-xs);
+  --font-size-sm: var(--text-sm);
+  --font-size-base: var(--text-base);
+  --font-size-lg: var(--text-lg);
+  --font-size-xl: var(--text-xl);
+  --font-size-2xl: var(--text-2xl);
+  --font-size-3xl: var(--text-3xl);
+  --font-size-4xl: var(--text-4xl);
+}
+
+:root {
+  --surface: #F8FAFC;
+  --background: #F8FAFC;
+  --on-surface: #0F172A;
+  --primary: #89CFF0;
+  --on-primary: #ffffff;
+  --surface-container: #eaeff2;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f0f4f7;
+  --surface-container-high: #e3e9ed;
+  --surface-container-highest: #dce4e8;
+  --outline-variant: #acb3b7;
+  --baby-blue: #89CFF0;
+  --cloud-white: #F8FAFC;
+  --primary-container: #a0cdfc;
+  --secondary-container: #d5e4f7;
+  --tertiary-container: #d1ccfd;
+  --primary-dim: #7FB5E6;
+  --secondary: #526070;
+  --tertiary: #5e5a84;
+  --on-surface-variant: #475569;
+
+  /* Fluid Typography Scale (Skill-based) */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1rem + 1.25vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
+}
+
+.dark {
+  --surface: #030712;
+  --background: #030712;
+  --on-surface: #f8fafc;
+  --primary: #38bdf8;
+  --on-primary: #030712;
+  --surface-container: #0f172a;
+  --surface-container-lowest: #0b0f10;
+  --surface-container-low: #0f172a;
+  --surface-container-high: #1e293b;
+  --surface-container-highest: #334155;
+  --outline-variant: #1e293b;
+  --baby-blue: #0ea5e9;
+  --cloud-white: #030712;
+  --on-surface-variant: #e2e8f0;
+  --status-pending: #94a3b8;
+  --status-waitlist: #64748b;
+  --primary-container: #0c4a6e;
+  --secondary-container: #1e3a5f;
+  --tertiary-container: #312e81;
+  --primary-dim: #0284c7;
+  --secondary: #94a3b8;
+  --tertiary: #a5b4fc;
+}
+
+@layer base {
+  html {
+  }
+
+  body {
+    @apply font-body bg-[var(--surface)] text-[var(--on-surface)] min-h-screen m-0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+}
+
+@utility glass-card {
+  @apply bg-white/70 dark:bg-white/5 backdrop-blur-[20px] border border-white/50 dark:border-white/5 shadow-sm transition-all duration-500 rounded-[1.5rem];
+}
+
+@utility glass-panel {
+  @apply bg-white/70 dark:bg-white/5 backdrop-blur-[20px] border border-white/50 dark:border-white/10 shadow-2xl transition-all duration-500 rounded-[2rem];
+}
+
+@utility ecosystem-card {
+  @apply relative overflow-hidden bg-white/90 dark:bg-[#0a0f1e]/80 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-white/60 dark:border-white/10 shadow-2xl transition-all duration-500 hover:shadow-sky-500/10;
+}
+
+@utility ecosystem-glow {
+  @apply absolute -top-1/2 -right-1/2 w-full h-full bg-sky-500/5 blur-[120px] rounded-full transition-all duration-1000 group-hover:bg-sky-500/10;
+}
+
+@utility comparison-card {
+  @apply relative overflow-hidden bg-white dark:bg-[#0a0f1e] rounded-[2.5rem] border border-white dark:border-white/5 shadow-2xl transition-all duration-700 flex flex-col md:flex-row min-h-[600px];
+}
+
+@utility noir-chaos {
+  @apply flex-1 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-[#020617] dark:to-[#0f172a] relative dark:border-r border-slate-200/50 dark:border-white/5;
+}
+
+@utility sanctuary-peace {
+  @apply flex-1 bg-gradient-to-br from-white to-slate-50 dark:bg-[#030712] relative;
+}
+
+@utility vanta-glow {
+  @apply shadow-[0_0_50px_-12px_rgba(56,189,248,0.15)] dark:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5),0_0_80px_-20px_rgba(56,189,248,0.25)];
+}
+
+@utility premium-border {
+  @apply border border-white/20 dark:border-white/10;
+}
+
+@utility sticky-note-blue {
+  @apply bg-[#E3F2FD] dark:bg-sky-950/40 border-l-4 border-[#2196F3] dark:border-sky-500 transition-colors duration-300;
+}
+
+@utility sticky-note-pink {
+  @apply bg-[#FCE4EC] dark:bg-indigo-950/40 border-l-4 border-[#F06292] dark:border-indigo-500 transition-colors duration-300;
+}
+
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#89CFF0] to-[#7FB5E6] dark:from-sky-300 dark:to-indigo-300;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Global Button & Interactive Animations */
+@layer base {
+  button, 
+  .btn-premium,
+  a.nav-link {
+    @apply transition-all duration-300 ease-in-out cursor-pointer outline-none;
+  }
+
+  button:active:not(:disabled),
+  .btn-premium:active:not(:disabled) {
+    @apply scale-95;
+  }
+
+  button:hover:not(:disabled) .material-symbols-outlined,
+  button:hover:not(:disabled) svg,
+  a:hover .material-symbols-outlined,
+  a:hover svg {
+    @apply scale-110 transition-transform duration-300;
+  }
+}
+
+/* Logout animations */
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  50% {
+    width: 70%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-progress {
+  animation: progress 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@utility animate-bounce-subtle {
+  animation: bounce-subtle 2s infinite;
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(-5%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+.custom-date-input {
+  position: relative;
+}
+
+/* Global Calendar Icon Theme: Baby Blue */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(72%) sepia(21%) saturate(769%) hue-rotate(173deg) brightness(101%) contrast(89%);
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+input[type="date"]:hover::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+.dark input[type="date"]::-webkit-calendar-picker-indicator,
+.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(53%) sepia(85%) saturate(1586%) hue-rotate(171deg) brightness(101%) contrast(96%);
+}
+
+@utility animate-toast-progress {
+  animation: toast-progress 4s linear forwards;
+}
+
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
