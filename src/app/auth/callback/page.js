@@ -109,7 +109,7 @@ function AuthCallbackContent() {
             setMessage('Welcome! Redirecting to dashboard...');
             
             setTimeout(() => {
-              router.replace('/dashboard');
+              window.location.href = '/dashboard';
             }, 1000);
             return;
           }
@@ -186,7 +186,7 @@ function AuthCallbackContent() {
             setMessage('Welcome! Redirecting to dashboard...');
             
             setTimeout(() => {
-              router.replace('/dashboard');
+              window.location.href = '/dashboard';
             }, 1000);
             return;
           }
@@ -229,7 +229,7 @@ function AuthCallbackContent() {
             
             setStatus('success');
             setMessage('Welcome! Redirecting to dashboard...');
-            setTimeout(() => router.replace('/dashboard'), 1000);
+            setTimeout(() => window.location.href = '/dashboard', 1000);
             return;
           }
         }

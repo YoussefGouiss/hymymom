@@ -87,19 +87,25 @@ export default function Navbar() {
           {!isLoading && (
             <>
               {user ? (
-                <>
-                  <Link href="/dashboard" className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-on-surface hover:text-primary transition-colors">
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
+                <div className="flex items-center gap-3">
+                  <Link 
+                    href="/dashboard" 
+                    className="group relative px-6 py-2.5 bg-on-surface dark:bg-white text-surface dark:text-slate-950 rounded-full text-sm font-bold overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl shadow-slate-200 dark:shadow-none"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Enter Sanctuary
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity" />
                   </Link>
                   <button 
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-6 py-2.5 bg-sky-400 text-white hover:bg-sky-500 rounded-full text-sm font-bold shadow-lg shadow-sky-200 dark:shadow-none hover:scale-105 active:scale-95 transition-all"
+                    className="p-2.5 rounded-full border border-outline-variant/20 dark:border-white/10 text-on-surface-variant dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-white/5 transition-all"
+                    title="Log out"
                   >
                     <LogOut className="w-4 h-4" />
-                    Log out
                   </button>
-                </>
+                </div>
               ) : (
                 <>
                   <Link href="/login" className="px-5 py-2 text-sm font-semibold text-on-surface hover:text-primary transition-colors">
@@ -109,7 +115,7 @@ export default function Navbar() {
                     href="/register" 
                     className="px-6 py-2.5 bg-primary text-white rounded-full text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
                   >
-                    Start Free Trial
+                    Create Sanctuary
                   </Link>
                 </>
               )}
@@ -139,24 +145,28 @@ export default function Navbar() {
           <hr className="border-outline-variant/10 my-2" />
           
           {user ? (
-            <>
-              <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium flex items-center gap-2">
+            <div className="flex flex-col gap-3">
+              <Link 
+                href="/dashboard" 
+                onClick={() => setIsMobileMenuOpen(false)} 
+                className="w-full py-4 bg-on-surface dark:bg-white text-surface dark:text-slate-950 rounded-2xl text-center font-bold flex items-center justify-center gap-2 shadow-lg"
+              >
                 <LayoutDashboard className="w-5 h-5" />
-                Dashboard
+                Enter Sanctuary
               </Link>
               <button 
                 onClick={handleLogout}
-                className="w-full py-4 bg-sky-400 text-white rounded-2xl text-center font-bold flex items-center justify-center gap-2 hover:bg-sky-500 transition-colors"
+                className="w-full py-4 bg-surface-container-high dark:bg-white/5 text-on-surface-variant dark:text-slate-400 rounded-2xl text-center font-bold flex items-center justify-center gap-2 border border-outline-variant/10"
               >
                 <LogOut className="w-5 h-5" />
                 Log out
               </button>
-            </>
+            </div>
           ) : (
             <>
               <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium">Log in</Link>
-              <Link href="/register" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-primary text-white rounded-2xl text-center font-bold">
-                Start Free Trial
+              <Link href="/register" onClick={() => setIsMobileMenuOpen(false)} className="w-full py-4 bg-primary text-white rounded-2xl text-center font-bold shadow-lg shadow-primary/20">
+                Create Sanctuary
               </Link>
             </>
           )}

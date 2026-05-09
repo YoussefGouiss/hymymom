@@ -88,6 +88,33 @@ export default function Dashboard() {
 
   const NOTE_TYPES = ['General', 'Clinical', 'Emotional', 'Feeding', 'Sleep', 'Business'];
 
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+      setShowInstallBtn(false);
+    }
+  };
+
   const handleAddNote = async (e) => {
     e.preventDefault();
     if (!noteForm.content.trim()) { setNoteError('Please write something.'); return; }
@@ -215,15 +242,19 @@ export default function Dashboard() {
       else if (formData.mother_name.length < 2) errors.mother_name = "Name must be at least 2 characters";
     }
     if (step === 2) {
-      if (!formData.birth_date?.trim()) {
-        errors.birth_date = "Birth date is required to track recovery";
-      } else {
-        const birthDate = new Date(formData.birth_date);
-        const today = new Date();
-        if (birthDate > today) errors.birth_date = "Birth date cannot be in the future";
+      if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        errors.email = "Invalid email format";
       }
     }
-    if (step === 4) {
+    if (step === 3) {
+      if (!formData.birth_date?.trim()) {
+        errors.birth_date = "Birth date is required";
+      } else {
+        const birthDate = new Date(formData.birth_date);
+        if (birthDate > new Date()) errors.birth_date = "Birth date cannot be in the future";
+      }
+    }
+    if (step === 5) {
       if (!formData.delivery_type?.trim()) errors.delivery_type = "Required";
       if (!formData.feeding_plan?.trim()) errors.feeding_plan = "Required";
     }
@@ -255,8 +286,9 @@ export default function Dashboard() {
         const errors = validateForm();
         if (Object.keys(errors).length > 0) {
           if (errors.mother_name) setFormStep(1);
-          else if (errors.birth_date) setFormStep(2);
-          else if (errors.delivery_type || errors.feeding_plan) setFormStep(4);
+          else if (errors.email || errors.phone || errors.address) setFormStep(2);
+          else if (errors.birth_date) setFormStep(3);
+          else if (errors.delivery_type || errors.feeding_plan) setFormStep(5);
           setIsSubmitting(false);
           return;
         }
@@ -394,6 +426,15 @@ export default function Dashboard() {
                 <span className="material-symbols-outlined text-xs">task_alt</span>
                 {upcomingVisits.length} Visits This Week
               </div>
+              {showInstallBtn && (
+                <button 
+                  onClick={handleInstallClick}
+                  className="px-4 py-1.5 rounded-full bg-slate-900 dark:bg-primary text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 animate-in zoom-in duration-300"
+                >
+                  <span className="material-symbols-outlined text-xs">download_for_offline</span>
+                  Install App
+                </button>
+              )}
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-7xl font-headline font-bold text-slate-900 dark:text-white mb-6 lg:mb-10 tracking-tight leading-[1.05]">
@@ -750,7 +791,7 @@ export default function Dashboard() {
             <div className="space-y-5">
               {/* Progress Indicator */}
               <div className="flex gap-2 mb-8 px-1">
-                {[1, 2, 3, 4, 5, 6].map(s => (
+                {[1, 2, 3, 4, 5, 6, 7].map(s => (
                   <div key={s} className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${s <= formStep ? 'bg-baby-blue dark:bg-sky-500 shadow-[0_0_8px_rgba(137,207,240,0.5)]' : 'bg-slate-200 dark:bg-white/5'}`} />
                 ))}
               </div>
@@ -770,163 +811,172 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {/* —— STEP 1: IDENTITY —— */}
-              <div className={formStep !== 1 ? 'hidden' : 'block'}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* —— STEP 1: IDENTITY (Mother, Partner, Baby) —— */}
+              <div className={formStep !== 1 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Mother's Name *</label>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Mother's Name *</label>
                     <input 
                       type="text"
-                      className={`w-full p-3 rounded-xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.mother_name ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50' : 'border-slate-200 dark:border-white/10 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
+                      className={`w-full p-4 rounded-2xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.mother_name ? 'border-red-500 focus:ring-red-500/20' : 'border-outline-variant/20 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
                       value={formData.mother_name || ''} 
                       onChange={e => setFormData({...formData, mother_name: e.target.value})} 
-                      placeholder="e.g. Sarah Jenkins" 
+                      placeholder="Full Name" 
                     />
-                    {formErrors.mother_name && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{formErrors.mother_name}</p>}
+                    {formErrors.mother_name && <p className="text-xs text-red-500 mt-1">{formErrors.mother_name}</p>}
                   </div>
                   <div>
-                    <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Partner's Name</label>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Partner / Father Name</label>
                     <input 
                       type="text"
-                      className={`w-full p-3 rounded-xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.partner_name ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50' : 'border-slate-200 dark:border-white/10 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
+                      className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 outline-none transition-all"
                       value={formData.partner_name || ''} 
                       onChange={e => setFormData({...formData, partner_name: e.target.value})} 
                       placeholder="Optional" 
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div>
-                    <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Phone Number</label>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Baby's Name</label>
                     <input 
-                      type="tel" 
-                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 focus:outline-none transition-all" 
-                      value={formData.phone || ''} 
-                      onChange={e => setFormData({...formData, phone: e.target.value})} 
-                      placeholder="+1 (555) 000-0000"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Email Address</label>
-                    <input 
-                      type="email" 
-                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 focus:outline-none transition-all" 
-                      value={formData.email || ''} 
-                      onChange={e => setFormData({...formData, email: e.target.value})} 
-                      placeholder="sarah@example.com"
+                      type="text"
+                      className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 outline-none transition-all"
+                      value={formData.baby_name || ''} 
+                      onChange={e => setFormData({...formData, baby_name: e.target.value})} 
+                      placeholder="Optional / Pending" 
                     />
                   </div>
                 </div>
 
-                <div className="mt-4">
-                  <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Home Address</label>
-                  <textarea 
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 focus:outline-none transition-all min-h-[80px]" 
-                    value={formData.address || ''} 
-                    onChange={e => setFormData({...formData, address: e.target.value})} 
-                    placeholder="123 Sanctuary Way, Peace City..."
-                  />
-                </div>
-                
-                <div className="mt-4">
-                  <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Baby's Name</label>
-                  <input 
-                    type="text"
-                    className={`w-full p-3 rounded-xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.baby_name ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50' : 'border-slate-200 dark:border-white/10 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
-                    value={formData.baby_name || ''} 
-                    onChange={e => setFormData({...formData, baby_name: e.target.value})} 
-                    placeholder="Optional / Pending" 
-                  />
-                </div>
-
-                <button type="button" onClick={() => validateStep(1) && setFormStep(2)} className="w-full mt-8 py-4 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-2xl shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-transform">
+                <button type="button" onClick={() => validateStep(1) && setFormStep(2)} className="w-full mt-8 py-5 bg-primary dark:bg-primary text-white dark:text-slate-950 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-xl shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2">
                   Continue <span className="material-symbols-outlined text-sm">arrow_forward</span>
                 </button>
               </div>
 
-              {/* —— STEP 2: TIMING —— */}
-              <div className={formStep !== 2 ? 'hidden' : 'block mt-6'}>
-                <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Birth Date</label>
-                <input 
-                  type="date" 
-                  className={`w-full p-3 rounded-xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.birth_date ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50' : 'border-slate-200 dark:border-white/10 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
-                  value={formData.birth_date || ''} 
-                  onChange={e => setFormData({...formData, birth_date: e.target.value})} 
-                />
-                {formErrors.birth_date && <p className="text-xs text-red-500 dark:text-red-400 mt-1">{formErrors.birth_date}</p>}
+              {/* —— STEP 2: CONTACT —— */}
+              <div className={formStep !== 2 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Phone Number</label>
+                    <input 
+                      type="tel"
+                      className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 outline-none transition-all"
+                      value={formData.phone || ''} 
+                      onChange={e => setFormData({...formData, phone: e.target.value})} 
+                      placeholder="+1 (555) 000-0000" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Email Address</label>
+                    <input 
+                      type="email"
+                      className={`w-full p-4 rounded-2xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.email ? 'border-red-500 focus:ring-red-500/20' : 'border-outline-variant/20 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
+                      value={formData.email || ''} 
+                      onChange={e => setFormData({...formData, email: e.target.value})} 
+                      placeholder="mother@example.com" 
+                    />
+                    {formErrors.email && <p className="text-xs text-red-500 mt-1">{formErrors.email}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Home Address</label>
+                    <textarea 
+                      className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 outline-none transition-all min-h-[100px]"
+                      value={formData.address || ''} 
+                      onChange={e => setFormData({...formData, address: e.target.value})} 
+                      placeholder="Street, City, Zip..." 
+                    />
+                  </div>
+                </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button type="button" onClick={() => setFormStep(1)} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold rounded-2xl">Back</button>
-                  <button type="button" onClick={() => validateStep(2) && setFormStep(3)} className="flex-[2] py-4 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-2xl shadow-lg">Confirm Date</button>
+                  <button type="button" onClick={() => setFormStep(1)} className="flex-1 py-4 bg-surface-container dark:bg-white/5 text-on-surface-variant font-bold rounded-2xl">Back</button>
+                  <button type="button" onClick={() => validateStep(2) && setFormStep(3)} className="flex-[2] py-4 bg-primary text-white dark:text-slate-950 font-bold rounded-2xl">Next Step</button>
                 </div>
               </div>
 
-              {/* —— STEP 3: PHOTO —— */}
-              <div className={formStep !== 3 ? 'hidden' : 'block mt-8'}>
-                <label className="block text-xs mb-2 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Profile Photo</label>
+              {/* —— STEP 3: TIMING —— */}
+              <div className={formStep !== 3 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
+                <div>
+                  <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Birth Date *</label>
+                  <input 
+                    type="date"
+                    className={`w-full p-4 rounded-2xl border transition-all bg-surface dark:bg-white/5 dark:text-white text-sm h-[56px] focus:ring-2 focus:outline-none ${formErrors.birth_date ? 'border-red-500 focus:ring-red-500/20' : 'border-outline-variant/20 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
+                    value={formData.birth_date || ''} 
+                    onChange={e => setFormData({...formData, birth_date: e.target.value})} 
+                  />
+                  {formErrors.birth_date && <p className="text-xs text-red-500 mt-1">{formErrors.birth_date}</p>}
+                </div>
+
+                <div className="flex gap-3 mt-8">
+                  <button type="button" onClick={() => setFormStep(2)} className="flex-1 py-4 bg-surface-container dark:bg-white/5 text-on-surface-variant font-bold rounded-2xl">Back</button>
+                  <button type="button" onClick={() => validateStep(3) && setFormStep(4)} className="flex-[2] py-4 bg-primary text-white dark:text-slate-950 font-bold rounded-2xl">Confirm Date</button>
+                </div>
+              </div>
+
+              {/* —— STEP 4: PHOTO —— */}
+              <div className={formStep !== 4 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
+                <label className="block text-[10px] mb-4 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Profile Image</label>
                 
                 {photoPreview ? (
-                  <div className="mb-4 relative inline-block text-center w-full">
-                    <img src={photoPreview} alt="Preview" className="h-40 w-40 rounded-2xl object-cover border-4 border-baby-blue dark:border-sky-500 shadow-xl mx-auto" />
-                    <button type="button" onClick={removePhoto} className="absolute top-0 right-1/2 translate-x-24 p-2 bg-red-500 text-white rounded-full shadow-lg"><X className="w-5 h-5" /></button>
+                  <div className="relative w-48 h-48 mx-auto group">
+                    <img src={photoPreview} alt="Preview" className="w-full h-full rounded-[2.5rem] object-cover shadow-2xl border-4 border-white dark:border-slate-800" />
+                    <button type="button" onClick={removePhoto} className="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform"><X className="w-5 h-5" /></button>
                   </div>
                 ) : (
-                  <label className="block p-10 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-2xl hover:border-baby-blue dark:hover:border-sky-500 transition-all cursor-pointer bg-slate-50/50 dark:bg-white/5 text-center">
-                    <input id="photo-input" type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                    <Upload className="w-10 h-10 mx-auto text-slate-400 mb-2" />
-                    <p className="text-sm font-bold text-slate-600 dark:text-slate-300">Upload Photo</p>
-                    <p className="text-[10px] text-slate-500 mt-1 uppercase">Max 5MB • JPG, PNG, WebP</p>
+                  <label className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-outline-variant/20 rounded-[2.5rem] bg-surface-container/30 dark:bg-white/5 hover:bg-surface-container/50 cursor-pointer transition-all text-center">
+                    <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                    <Upload className="w-10 h-10 text-primary/40 mb-3 mx-auto" />
+                    <span className="text-sm font-bold text-on-surface-variant block">Upload Sanctuary Portrait</span>
+                    <span className="text-[10px] text-on-surface-variant/40 mt-1 uppercase tracking-tighter block">JPG, PNG or WebP</span>
                   </label>
                 )}
 
                 <div className="flex flex-col gap-3 mt-8">
-                  <button type="button" onClick={() => setFormStep(4)} className="w-full py-4 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-2xl shadow-lg">Continue</button>
+                  <button type="button" onClick={() => setFormStep(5)} className="w-full py-4 bg-primary text-white dark:text-slate-950 font-bold rounded-2xl shadow-xl shadow-primary/20">Continue</button>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setFormStep(2)} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold rounded-2xl text-sm">Back</button>
-                    <button type="button" onClick={() => { removePhoto(); setFormStep(4); }} className="flex-1 py-4 text-slate-500 dark:text-slate-400 font-bold text-sm">Skip for now</button>
+                    <button type="button" onClick={() => setFormStep(3)} className="flex-1 py-4 bg-surface-container dark:bg-white/5 text-on-surface-variant font-bold rounded-2xl">Back</button>
+                    <button type="button" onClick={() => { removePhoto(); setFormStep(5); }} className="flex-1 py-4 text-on-surface-variant/60 font-bold text-sm">Skip</button>
                   </div>
                 </div>
               </div>
 
-              {/* —— STEP 4: CLINICAL —— */}
-              <div className={formStep !== 4 ? 'hidden' : 'block mt-6'}>
+              {/* —— STEP 5: CLINICAL —— */}
+              <div className={formStep !== 5 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Delivery Type</label>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Delivery Method</label>
                     <select 
-                      className={`w-full p-3 rounded-xl border transition-all bg-surface dark:bg-[#0f172a] dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.delivery_type ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50' : 'border-slate-200 dark:border-white/10 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
-                      value={formData.delivery_type} 
+                      className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-[#0f172a] dark:text-white text-sm outline-none transition-all appearance-none"
+                      value={formData.delivery_type || ''} 
                       onChange={e => setFormData({...formData, delivery_type: e.target.value})}
                     >
-                      {DELIVERY_TYPES.map(d => <option key={d} value={d}>{d}</option>)}
+                      {DELIVERY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Feeding Plan</label>
+                    <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Feeding Plan</label>
                     <select 
-                      className={`w-full p-3 rounded-xl border transition-all bg-surface dark:bg-[#0f172a] dark:text-white text-sm focus:ring-2 focus:outline-none ${formErrors.feeding_plan ? 'border-red-500 dark:border-red-500 focus:ring-red-500/50' : 'border-slate-200 dark:border-white/10 focus:ring-baby-blue dark:focus:ring-sky-500'}`}
-                      value={formData.feeding_plan} 
+                      className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-[#0f172a] dark:text-white text-sm outline-none transition-all appearance-none"
+                      value={formData.feeding_plan || ''} 
                       onChange={e => setFormData({...formData, feeding_plan: e.target.value})}
                     >
-                      {FEEDING_PLANS.map(f => <option key={f} value={f}>{f}</option>)}
+                      {FEEDING_PLANS.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button type="button" onClick={() => setFormStep(3)} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold rounded-2xl">Back</button>
-                  <button type="button" onClick={() => validateStep(4) && setFormStep(5)} className="flex-[2] py-4 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-2xl shadow-lg">Next Step</button>
+                  <button type="button" onClick={() => setFormStep(4)} className="flex-1 py-4 bg-surface-container dark:bg-white/5 text-on-surface-variant font-bold rounded-2xl">Back</button>
+                  <button type="button" onClick={() => validateStep(5) && setFormStep(6)} className="flex-[2] py-4 bg-primary text-white dark:text-slate-950 font-bold rounded-2xl">Clinical Check</button>
                 </div>
               </div>
 
-              {/* —— STEP 5: ADMINISTRATIVE —— */}
-              <div className={formStep !== 5 ? 'hidden' : 'block mt-6'}>
+              {/* —— STEP 6: STATUS —— */}
+              <div className={formStep !== 6 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
                 <div>
-                  <label className="block text-xs mb-1.5 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Care Status</label>
+                  <label className="block text-[10px] mb-2 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Care Status</label>
                   <select 
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-surface dark:bg-[#0f172a] dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 focus:outline-none transition-all" 
-                    value={formData.status} 
+                    className="w-full p-4 rounded-2xl border border-outline-variant/20 bg-surface dark:bg-[#0f172a] dark:text-white text-sm outline-none transition-all appearance-none"
+                    value={formData.status || ''} 
                     onChange={e => setFormData({...formData, status: e.target.value})}
                   >
                     {CARE_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -934,82 +984,35 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex gap-3 mt-8">
-                  <button type="button" onClick={() => setFormStep(4)} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold rounded-2xl">Back</button>
-                  <button type="button" onClick={() => setFormStep(6)} className="flex-[2] py-4 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-2xl shadow-lg">Save & Next</button>
+                  <button type="button" onClick={() => setFormStep(5)} className="flex-1 py-4 bg-surface-container dark:bg-white/5 text-on-surface-variant font-bold rounded-2xl">Back</button>
+                  <button type="button" onClick={() => setFormStep(7)} className="flex-[2] py-4 bg-primary text-white dark:text-slate-950 font-bold rounded-2xl">Next: Services</button>
                 </div>
               </div>
 
-              {/* —— STEP 6: SERVICES —— */}
-              <div className={formStep !== 6 ? 'hidden' : 'block mt-6'}>
-                <label className="block text-xs mb-2 font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Services Needed</label>
-                
-                {/* Predefined Services */}
-                <div className="mb-4">
-                  <p className="text-xs text-on-surface-variant dark:text-slate-500 mb-2 font-semibold">Quick Select:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {SERVICES_OPTIONS.map(svc => (
-                      <button type="button" key={svc} onClick={() => toggleService(svc)} className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${selectedServices.includes(svc) ? 'bg-baby-blue dark:bg-sky-500 text-white border-baby-blue dark:border-sky-500' : 'border-slate-300 dark:border-white/10 text-on-surface-variant dark:text-slate-400 hover:border-baby-blue hover:text-baby-blue dark:hover:border-sky-500 dark:hover:text-sky-400'}`}>
-                        {svc}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Custom Service Input */}
-                <div className="mb-3">
-                  <p className="text-xs text-on-surface-variant dark:text-slate-500 mb-2 font-semibold">Add Custom Service:</p>
-                  <div className="flex gap-2">
-                    <input 
-                      type="text"
-                      value={customServiceInput}
-                      onChange={(e) => setCustomServiceInput(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          addCustomService();
-                        }
-                      }}
-                      placeholder="e.g. Mental Health..."
-                      className="flex-1 p-2.5 rounded-lg border border-slate-200 dark:border-white/10 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-baby-blue dark:focus:ring-sky-500 focus:outline-none transition-all"
-                    />
-                    <button 
+              {/* —— STEP 7: SERVICES & SUBMIT —— */}
+              <div className={formStep !== 7 ? 'hidden' : 'block animate-in fade-in slide-in-from-right-4'}>
+                <label className="block text-[10px] mb-3 font-black uppercase tracking-[0.2em] text-on-surface-variant/70 dark:text-slate-400">Services Provisioned</label>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {SERVICES_OPTIONS.map(svc => (
+                    <button
+                      key={svc}
                       type="button"
-                      onClick={addCustomService}
-                      className="px-4 py-2.5 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-lg hover:opacity-90 transition-all text-sm"
+                      onClick={() => toggleService(svc)}
+                      className={`px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border transition-all ${selectedServices.includes(svc) ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'border-outline-variant/20 text-on-surface-variant hover:border-primary/40'}`}
                     >
-                      Add
+                      {svc}
                     </button>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Selected Services Display */}
-                {selectedServices.length > 0 && (
-                  <div>
-                    <p className="text-xs text-on-surface-variant dark:text-slate-500 mb-2 font-semibold">Selected ({selectedServices.length}):</p>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedServices.map(svc => (
-                        <div 
-                          key={svc} 
-                          className="flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-baby-blue/10 text-baby-blue border border-baby-blue/20"
-                        >
-                          <span>{svc}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeService(svc)}
-                            className="ml-1 hover:opacity-70 transition-opacity text-sm"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex gap-3 mt-8">
-                  <button type="button" onClick={() => setFormStep(5)} className="flex-1 py-4 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 font-bold rounded-2xl">Back</button>
-                  <button type="submit" disabled={isSubmitting} className="flex-[2] py-4 bg-baby-blue dark:bg-sky-500 text-white dark:text-slate-950 font-bold rounded-2xl shadow-xl active:scale-95 transition-all flex justify-center items-center gap-3">
-                    {isSubmitting ? <span className="material-symbols-outlined animate-spin">refresh</span> : 'Complete Setup'}
+                <div className="flex gap-3 mt-10">
+                  <button type="button" onClick={() => setFormStep(6)} className="flex-1 py-4 bg-surface-container dark:bg-white/5 text-on-surface-variant font-bold rounded-2xl transition-all active:scale-95">Back</button>
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="flex-[3] py-4 bg-primary text-white dark:text-slate-950 font-black uppercase tracking-widest text-[10px] rounded-2xl shadow-2xl shadow-primary/30 flex justify-center items-center gap-2 active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    {isSubmitting ? <span className="material-symbols-outlined animate-spin">refresh</span> : 'Complete Registration'}
                   </button>
                 </div>
               </div>

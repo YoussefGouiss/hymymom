@@ -89,7 +89,7 @@ export default function Hero() {
                 href={user ? "/dashboard" : "/register"} 
                 className="btn-primary inline-block px-7 py-3.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-full text-[14.5px] font-medium shadow-[0_4px_24px_rgba(var(--primary-rgb),0.3)] hover:-translate-y-0.5 hover:shadow-[0_8px_30px_rgba(var(--primary-rgb),0.45)] transition-all"
               >
-                {user ? "Go to Dashboard" : "Start free — 2 months free"}
+                {user ? "Enter Sanctuary" : "Start free — 2 months free"}
               </Link>
             )}
           </div>

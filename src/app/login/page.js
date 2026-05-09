@@ -67,7 +67,8 @@ function LoginContent() {
       setAuthState(token, userData);
       
       const redirect = searchParams.get('redirect') || '/dashboard';
-      router.push(redirect);
+      // Use window.location for a hard redirect to ensure cookies are sent to middleware
+      window.location.href = redirect;
     } catch (err) {
       setError(parseAuthError(err.response, err.data, err));
     } finally {
@@ -214,7 +215,7 @@ function LoginContent() {
                 </>
               ) : (
                 <>
-                  Access Dashboard
+                  Sign In
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -226,7 +227,7 @@ function LoginContent() {
             <p className="text-on-surface-variant dark:text-slate-400 font-medium">
               New to the platform?{' '}
               <Link href="/register" className="text-baby-blue dark:text-sky-400 font-bold hover:underline transition-colors ml-1">
-                Start Free Trial
+                Create Sanctuary
               </Link>
             </p>
           </div>

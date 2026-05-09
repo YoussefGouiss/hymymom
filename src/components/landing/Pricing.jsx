@@ -84,7 +84,7 @@ export default function Pricing() {
                   href={user ? "/dashboard" : "/register"} 
                   className="block w-full py-5 rounded-full font-bold text-center transition-all bg-primary text-white shadow-xl shadow-primary/20 hover:scale-105 active:scale-95"
                 >
-                  {user ? "Go to Dashboard" : plan.cta}
+                  {user ? "Enter Sanctuary" : plan.cta}
                 </Link>
               )}
             </div>

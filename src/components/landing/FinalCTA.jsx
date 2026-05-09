@@ -29,7 +29,7 @@ export default function FinalCTA() {
                 href={user ? "/dashboard" : "/register"} 
                 className="px-12 py-5 bg-white text-primary rounded-full font-bold text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3"
               >
-                {user ? "Go to Dashboard" : "Get Started for Free"}
+                {user ? "Enter Sanctuary" : "Get Started for Free"}
                 <ArrowRight className="w-6 h-6" />
               </Link>
             )}

@@ -118,7 +118,16 @@ export default function NotesPage() {
   const [formData, setFormData] = useState({ family_id: '', type: 'General', content: '', is_pinned: false });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [formStep, setFormStep] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState({ open: false, noteId: null });
+  const filterScrollRef = React.useRef(null);
+
+  const scrollFilters = (direction) => {
+    if (filterScrollRef.current) {
+      const scrollAmount = direction === 'left' ? -150 : 150;
+      filterScrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   const fetchFamilies = useCallback(async () => {
     if (!user) return;
@@ -253,44 +262,65 @@ export default function NotesPage() {
             />
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
           </div>
-          <button onClick={() => { setError(''); setModalOpen(true); }} className="bg-primary text-on-primary px-6 py-3 md:px-8 md:py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center gap-3 active:scale-95">
+          <button onClick={() => { setError(''); setFormStep(1); setModalOpen(true); }} className="bg-primary text-on-primary px-6 py-3 md:px-8 md:py-4 rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-primary/20 hover:scale-105 transition-all flex items-center gap-3 active:scale-95">
             <span className="material-symbols-outlined">add_circle</span>
             New Note
           </button>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-surface-container-low/50 dark:bg-slate-900/30 p-4 md:p-2 md:pl-6 rounded-[2rem] backdrop-blur-xl border border-outline-variant/5">
-        <div className="flex flex-col md:flex-row md:items-center gap-6">
-          {/* Type Filters */}
-          <div className="flex flex-wrap items-center gap-2">
-            {['All', ...NOTE_TYPES].map(type => (
-              <button
-                key={type}
-                onClick={() => setActiveFilter(type)}
-                className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === type ? 'bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105' : 'text-on-surface-variant hover:bg-surface-container'}`}
-              >
-                {type}
-              </button>
-            ))}
+      {/* Filter Bar - Cleaned up to match original desktop look */}
+      <div className="bg-surface-container-low/50 dark:bg-slate-900/30 p-4 lg:p-2 lg:pl-6 rounded-[2rem] backdrop-blur-xl border border-outline-variant/5">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8">
+          {/* Type Filters - Functional arrows on mobile/tablet, wrapping on laptop */}
+          <div className="relative group/filters w-full lg:w-auto">
+            <div 
+              ref={filterScrollRef}
+              className="flex items-center gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 no-scrollbar snap-x snap-mandatory flex-nowrap lg:flex-wrap"
+            >
+              {['All', ...NOTE_TYPES].map(type => (
+                <button
+                  key={type}
+                  onClick={() => setActiveFilter(type)}
+                  className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap snap-start ${activeFilter === type ? 'bg-primary text-on-primary shadow-lg shadow-primary/20 scale-105' : 'text-on-surface-variant hover:bg-surface-container dark:bg-white/5'}`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+            
+            {/* Functional Mobile/Tablet Arrows */}
+            <button 
+              type="button"
+              onClick={() => scrollFilters('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center pr-1 pointer-events-auto lg:hidden bg-gradient-to-l from-surface-container-low dark:from-slate-900 to-transparent w-12 h-full z-10"
+            >
+               <span className="material-symbols-outlined text-sm text-primary animate-pulse ml-auto bg-white/20 dark:bg-black/20 rounded-full p-1 shadow-sm">chevron_right</span>
+            </button>
+            <button 
+              type="button"
+              onClick={() => scrollFilters('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center pl-1 pointer-events-auto lg:hidden bg-gradient-to-r from-surface-container-low dark:from-slate-900 to-transparent w-8 h-full z-10"
+            >
+               <span className="material-symbols-outlined text-sm text-primary/40 bg-white/20 dark:bg-black/20 rounded-full p-1 shadow-sm">chevron_left</span>
+            </button>
           </div>
 
-          <div className="hidden md:block h-8 w-px bg-outline-variant/10"></div>
+          <div className="hidden lg:block h-6 w-px bg-outline-variant/20 mx-2"></div>
 
           {/* Family Filter Dropdown */}
-          <div className="relative group min-w-[200px]">
+          <div className="relative group w-full lg:w-auto lg:min-w-[180px]">
             <select 
               value={selectedFamily}
               onChange={(e) => setSelectedFamily(e.target.value)}
-              className="appearance-none w-full bg-transparent pl-4 pr-10 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-on-surface-variant focus:outline-none cursor-pointer group-hover:text-primary transition-colors"
+              className="appearance-none w-full bg-surface-container dark:bg-white/5 lg:bg-transparent pl-4 pr-10 py-3 lg:py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest text-on-surface-variant focus:outline-none cursor-pointer group-hover:text-primary transition-colors border border-outline-variant/10 lg:border-none"
             >
               <option value="All">All Families</option>
               {familiesList.map(f => (
                 <option key={f.id} value={f.id}>{f.mother_name}</option>
               ))}
             </select>
-            <span className="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-lg pointer-events-none text-outline-variant/40 group-hover:text-primary transition-colors">unfold_more</span>
+            <span className="material-symbols-outlined absolute right-4 lg:right-2 top-1/2 -translate-y-1/2 text-lg pointer-events-none text-outline-variant/40 group-hover:text-primary transition-colors">unfold_more</span>
           </div>
         </div>
       </div>
@@ -340,7 +370,7 @@ export default function NotesPage() {
             <NoteCarousel>
               {/* Quick Add Placeholder (Now First) */}
               <div 
-                onClick={() => setModalOpen(true)}
+                onClick={() => { setError(''); setFormStep(1); setModalOpen(true); }}
                 className="border-2 border-dashed border-outline-variant/30 rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-10 flex flex-col items-center justify-center gap-4 hover:bg-surface-container-low transition-all cursor-pointer group min-h-[280px] md:min-h-[320px] w-full"
               >
                 <div className="w-16 h-16 rounded-full bg-surface-container-high group-hover:bg-primary/10 flex items-center justify-center transition-all group-hover:scale-110">
@@ -375,80 +405,116 @@ export default function NotesPage() {
       )}
 
       {/* New Note Modal */}
-      <Modal isOpen={modalOpen} onClose={() => { setModalOpen(false); setError(''); }} title="Capture a Note">
+      <Modal isOpen={modalOpen} onClose={() => { setModalOpen(false); setError(''); }} title={formStep === 1 ? "Categorize Thought" : "Capture Details"}>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Step Indicator */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className={`h-1 flex-1 rounded-full transition-all duration-500 ${formStep >= 1 ? 'bg-primary' : 'bg-outline-variant/20'}`}></div>
+            <div className={`h-1 flex-1 rounded-full transition-all duration-500 ${formStep >= 2 ? 'bg-primary' : 'bg-outline-variant/20'}`}></div>
+          </div>
+
           {error && (
-            <div className="p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl flex items-center gap-3 text-rose-500 text-xs font-bold animate-in fade-in slide-in-from-top-2">
+            <div className="p-3 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl flex items-center gap-3 text-rose-500 text-xs font-bold">
               <span className="material-symbols-outlined text-sm">error</span>
               {error}
             </div>
           )}
-          <div className="p-5 rounded-2xl bg-primary/5 border border-primary/10">
-            <p className="text-xs text-primary font-medium leading-relaxed">
-              <span className="font-black uppercase tracking-widest mr-2">Pro Tip:</span>
-              Use notes to organize ideas that don't belong in formal records—like follow-up gifts or business expansion ideas.
-            </p>
-          </div>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Client Association</label>
-                <select 
-                  className="w-full p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all"
-                  value={formData.family_id}
-                  onChange={e => setFormData({...formData, family_id: e.target.value})}
-                >
-                  <option value="">General Thought (No Client)</option>
-                  {familiesList.map(f => <option key={f.id} value={f.id}>{f.mother_name}</option>)}
-                </select>
+          {formStep === 1 && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                <p className="text-[11px] md:text-xs text-primary font-medium leading-relaxed">
+                  <span className="font-black uppercase tracking-widest mr-2">Pro Tip:</span>
+                  Associate this thought with a client to keep your clinical timeline organized.
+                </p>
               </div>
-              <div className="space-y-2">
-                <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Note Classification</label>
-                <div className="flex flex-wrap gap-2">
-                   {NOTE_TYPES.map(type => (
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Client Association</label>
+                  <select 
+                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                    value={formData.family_id}
+                    onChange={e => setFormData({...formData, family_id: e.target.value})}
+                  >
+                    <option value="">General Thought (No Client)</option>
+                    {familiesList.map(f => <option key={f.id} value={f.id}>{f.mother_name}</option>)}
+                  </select>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Classification</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {NOTE_TYPES.map(type => (
                       <button 
                         type="button" 
                         key={type}
                         onClick={() => setFormData({...formData, type})}
-                        className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase border transition-all ${formData.type === type ? 'bg-primary text-white border-transparent shadow-md' : 'bg-surface-container dark:bg-white/5 border-outline-variant/10 text-on-surface-variant hover:border-primary/50'}`}
+                        className={`px-4 py-3 rounded-xl text-[10px] font-black uppercase border transition-all flex items-center justify-between ${formData.type === type ? 'bg-primary text-white border-transparent shadow-lg shadow-primary/20' : 'bg-surface-container dark:bg-white/5 border-outline-variant/10 text-on-surface-variant hover:border-primary/50'}`}
                       >
                         {type}
+                        {formData.type === type && <span className="material-symbols-outlined text-xs">check_circle</span>}
                       </button>
-                   ))}
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">The Note</label>
-              <textarea 
-                rows={6} 
-                required 
-                className="w-full p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-sm font-medium focus:ring-2 focus:ring-primary focus:outline-none resize-none transition-all"
-                placeholder="Observation, strategy, or follow-up idea..."
-                value={formData.content}
-                onChange={e => setFormData({...formData, content: e.target.value})}
-              />
+              <button 
+                type="button"
+                onClick={() => setFormStep(2)}
+                className="w-full py-5 bg-primary text-on-primary font-black uppercase tracking-widest text-xs rounded-full flex justify-center items-center gap-3 shadow-xl shadow-primary/20 active:scale-95 transition-all"
+              >
+                Continue to Content
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
             </div>
+          )}
 
-            <div className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container dark:bg-white/5 border border-outline-variant/10 cursor-pointer hover:bg-primary/5 transition-all" onClick={() => setFormData({...formData, is_pinned: !formData.is_pinned})}>
-              <input type="checkbox" checked={formData.is_pinned} onChange={() => {}} className="w-5 h-5 accent-primary" />
-              <div className="flex-1">
-                 <p className="text-xs font-bold text-on-surface">Pin this note</p>
-                 <p className="text-[10px] text-on-surface-variant/60 uppercase font-black">Keep this note prominent</p>
+          {formStep === 2 && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">The Observation</label>
+                  <textarea 
+                    rows={5} 
+                    required 
+                    autoFocus
+                    className="w-full p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-sm font-medium focus:ring-2 focus:ring-primary focus:outline-none resize-none transition-all"
+                    placeholder="Write your clinical insight here..."
+                    value={formData.content}
+                    onChange={e => setFormData({...formData, content: e.target.value})}
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 p-4 rounded-2xl bg-surface-container dark:bg-white/5 border border-outline-variant/10 cursor-pointer hover:bg-primary/5 transition-all" onClick={() => setFormData({...formData, is_pinned: !formData.is_pinned})}>
+                  <input type="checkbox" checked={formData.is_pinned} onChange={() => {}} className="w-5 h-5 accent-primary" />
+                  <div className="flex-1">
+                    <p className="text-xs font-bold text-on-surface">Pin Observation</p>
+                    <p className="text-[10px] text-on-surface-variant/60 uppercase font-black tracking-tighter">Keep at the top of your workspace</p>
+                  </div>
+                  <span className={`material-symbols-outlined ${formData.is_pinned ? 'text-primary' : 'text-slate-300'}`}>push_pin</span>
+                </div>
               </div>
-              <span className={`material-symbols-outlined ${formData.is_pinned ? 'text-primary' : 'text-slate-300'}`}>push_pin</span>
-            </div>
-          </div>
 
-          <button 
-            type="submit" 
-            disabled={isSubmitting} 
-            className="w-full py-5 bg-primary text-on-primary font-black uppercase tracking-widest text-xs rounded-full flex justify-center items-center shadow-xl shadow-primary/20 active:scale-95 transition-all"
-          >
-            {isSubmitting ? <span className="material-symbols-outlined animate-spin">refresh</span> : 'Store Note'}
-          </button>
+              <div className="flex flex-col gap-3">
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting} 
+                  className="w-full py-5 bg-primary text-on-primary font-black uppercase tracking-widest text-xs rounded-full flex justify-center items-center shadow-xl shadow-primary/20 active:scale-95 transition-all"
+                >
+                  {isSubmitting ? <span className="material-symbols-outlined animate-spin text-sm">refresh</span> : 'Finalize Note'}
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setFormStep(1)}
+                  className="w-full py-3 text-slate-400 font-black uppercase tracking-widest text-[10px] hover:text-primary transition-colors"
+                >
+                  Go Back
+                </button>
+              </div>
+            </div>
+          )}
         </form>
       </Modal>
 

@@ -233,7 +233,7 @@ export default function Register() {
                 </>
               ) : (
                 <>
-                  Start 14-Day Free Trial
+                  Create Sanctuary
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
@@ -245,7 +245,7 @@ export default function Register() {
             <p className="text-on-surface-variant dark:text-slate-400 font-medium">
               Already a member?{' '}
               <Link href="/login" className="text-baby-blue dark:text-sky-400 font-bold hover:underline transition-colors ml-1">
-                Access Dashboard
+                Sign In
               </Link>
             </p>
           </div>

@@ -100,7 +100,7 @@ export default function WaitlistPage() {
               href="/register" 
               className="inline-flex items-center justify-center gap-2 px-8 py-3 border-2 border-sky-500 text-sky-500 rounded-full font-semibold hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors"
             >
-              Start Free Trial Now
+              Join the Sanctuary Now
             </Link>
           </div>
         </div>

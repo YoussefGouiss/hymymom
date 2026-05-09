@@ -66,6 +66,11 @@ export default function Settings() {
     }
   };
 
+  const handleDeletePhoto = () => {
+    setProfile(prev => ({ ...prev, photo_url: '' }));
+    setMessage({ type: 'success', text: 'Logo removed! Click update to save permanently.' });
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -228,8 +233,21 @@ export default function Settings() {
                   ) : (
                     <span className="material-symbols-outlined text-4xl text-primary/40">add_a_photo</span>
                   )}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
-                    <span className="material-symbols-outlined text-white">upload</span>
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-4 transition-all">
+                    <span className="material-symbols-outlined text-white hover:scale-125 transition-transform" title="Upload New">upload</span>
+                    {profile.photo_url && (
+                      <button 
+                        type="button" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePhoto();
+                        }}
+                        className="material-symbols-outlined text-rose-400 hover:text-rose-500 hover:scale-125 transition-all"
+                        title="Delete Image"
+                      >
+                        delete
+                      </button>
+                    )}
                   </div>
                 </div>
                 <input 

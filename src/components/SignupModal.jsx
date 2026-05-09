@@ -90,10 +90,10 @@ function SignupModal({ isOpen, onClose }) {
                       <HeartHandshake className="w-10 h-10 text-white" />
                     </div>
                     <h2 className="text-3xl font-headline font-bold text-on-surface dark:text-on-surface mb-3">
-                      Start Your <span className="text-gradient">14-Day Free</span> Trial
+                      Join the <span className="text-gradient">HymyMom</span> Sanctuary
                     </h2>
                     <p className="text-on-surface-variant dark:text-on-surface-variant font-medium">
-                      No credit card required. Full access to all Pro features.
+                      Professional clinical management for modern doulas and specialists.
                     </p>
                   </div>
 

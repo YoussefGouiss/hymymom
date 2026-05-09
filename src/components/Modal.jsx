@@ -6,9 +6,14 @@ export default function Modal({ isOpen, onClose, title, children }) {
   useEffect(() => {
     if (isOpen) {
       setShow(true);
+      document.body.style.overflow = 'hidden';
     } else {
+      document.body.style.overflow = 'unset';
       setTimeout(() => setShow(false), 300);
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   if (!show) return null;

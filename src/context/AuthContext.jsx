@@ -93,7 +93,7 @@ export function AuthProvider({ children }) {
       setToken(newToken);
       setUser(userData);
       
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     } catch (error) {
       throw error;
     } finally {
@@ -177,7 +177,7 @@ export function AuthProvider({ children }) {
       await new Promise(resolve => setTimeout(resolve, 800));
       
       // 7. Redirect to home page
-      router.push('/');
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
       
@@ -188,7 +188,7 @@ export function AuthProvider({ children }) {
       setUser(null);
       document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       
-      router.push('/');
+      window.location.href = '/';
     } finally {
       setIsLoggingOut(false);
     }

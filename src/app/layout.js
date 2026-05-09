@@ -15,14 +15,24 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "HymyMom Pro | Professional Intelligence for Doulas",
   description: "The clinical sanctuary designed to automate your admin and elevate postpartum care. Manage families, clinical logs, and professional reports in one beautiful workspace.",
+  manifest: "/manifest.json",
+  themeColor: "#89CFF0",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "HymyMom",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon.png', type: 'image/png', sizes: '32x32' },
-      { url: '/favicon.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-192x192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512x512.png', type: 'image/png', sizes: '512x512' },
     ],
     apple: [
-      { url: '/favicon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
   },
 };

@@ -689,6 +689,7 @@ export default function FamilyProfile({ params }) {
       baby_feeding_issues: ''
     });
     setEditingLogId(null);
+    setRecoveryStep(1);
     setRecoveryModalOpen(true);
   };
 
@@ -706,6 +707,7 @@ export default function FamilyProfile({ params }) {
       baby_feeding_issues: log.baby_feeding_issues
     });
     setEditingLogId(log.id);
+    setRecoveryStep(1);
     setRecoveryModalOpen(true);
   };
 
@@ -2337,7 +2339,7 @@ export default function FamilyProfile({ params }) {
               <div className="relative">
                 <input 
                   type="date" 
-                  className="w-full pl-4 pr-12 py-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all custom-date-input" 
+                  className="w-full pl-4 pr-12 py-4 h-[52px] rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all custom-date-input" 
                   value={paymentForm.due_date} 
                   onChange={e => setPaymentForm({...paymentForm, due_date: e.target.value})} 
                 />
@@ -2394,7 +2396,7 @@ export default function FamilyProfile({ params }) {
               <div className="relative">
                 <input 
                   type="date" 
-                  className="w-full pl-4 pr-12 py-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all custom-date-input" 
+                  className="w-full pl-4 pr-12 py-4 h-[52px] rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all custom-date-input" 
                   value={paymentLogForm.created_at} 
                   onChange={e => setPaymentLogForm({...paymentLogForm, created_at: e.target.value})} 
                 />
@@ -2469,7 +2471,7 @@ export default function FamilyProfile({ params }) {
             <div className="space-y-1.5">
               <label className="block text-xs font-bold uppercase tracking-widest text-on-surface-variant dark:text-slate-400">Due Date</label>
               <div className="relative">
-                <input type="date" className="w-full pl-3 pr-10 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-secondary focus:outline-none custom-date-input" value={invoiceForm.due_date} onChange={e => setInvoiceForm({...invoiceForm, due_date: e.target.value})} />
+                <input type="date" className="w-full pl-3 pr-10 py-3 h-[52px] rounded-xl border border-slate-200 dark:border-white/10 bg-surface dark:bg-white/5 dark:text-white text-sm focus:ring-2 focus:ring-secondary focus:outline-none custom-date-input" value={invoiceForm.due_date} onChange={e => setInvoiceForm({...invoiceForm, due_date: e.target.value})} />
                 <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-sky-400 pointer-events-none text-xl">event</span>
               </div>
             </div>
@@ -2507,7 +2509,7 @@ export default function FamilyProfile({ params }) {
               <div className="space-y-2">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Log Date</label>
                 <div className="relative">
-                  <input type="date" required className="w-full pl-4 pr-12 py-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all custom-date-input" value={recoveryForm.date} onChange={e => setRecoveryForm({...recoveryForm, date: e.target.value})} />
+                  <input type="date" required className="w-full pl-4 pr-12 py-4 h-[52px] rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-950 text-slate-900 dark:text-white text-sm font-bold focus:ring-2 focus:ring-primary focus:outline-none transition-all custom-date-input" value={recoveryForm.date} onChange={e => setRecoveryForm({...recoveryForm, date: e.target.value})} />
                   <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-sky-400 pointer-events-none">calendar_today</span>
                 </div>
               </div>
