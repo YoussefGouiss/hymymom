@@ -169,7 +169,7 @@ export default function Dashboard() {
         .slice(0, 3);
       setUpcomingVisits(upcoming);
 
-      const activeFamilies = families.filter(f => f.status === 'ACTIVE').length;
+      const activeFamilies = families.filter(f => f.status === 'ACTIVE' || f.status === 'PENDING').length;
       const weeklyVisits = visits.filter(v => {
         const d = new Date(v.scheduled_date);
         const startOfWeek = new Date();

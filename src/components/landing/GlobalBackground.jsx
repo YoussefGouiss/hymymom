@@ -5,7 +5,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 export default function GlobalBackground() {
   const [stars, setStars] = useState([]);
-  
+
   // Mouse Parallax Values
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -42,7 +42,7 @@ export default function GlobalBackground() {
       {/* Mesh Gradients / Background Texture */}
       <div className="absolute inset-0 bg-mesh opacity-100 dark:opacity-0 transition-opacity duration-1000"></div>
       <div className="absolute inset-0 bg-gradient opacity-100 dark:opacity-100 transition-opacity duration-1000"></div>
-      
+
       {/* Grid Pattern - Subtle in light mode */}
       <div className="absolute inset-0 opacity-[0.03] dark:opacity-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat transition-opacity duration-1000"></div>
       <div className="absolute inset-0 opacity-[0.15] dark:opacity-0" style={{ backgroundImage: 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
@@ -66,22 +66,22 @@ export default function GlobalBackground() {
       </div>
 
       {/* Floating Orbs with Parallax */}
-      <motion.div 
-        style={{ 
+      <motion.div
+        style={{
           x: smoothMouseX.get() * 60,
           y: smoothMouseY.get() * 40
         }}
         className="orb orb-1"
       />
-      <motion.div 
-        style={{ 
+      <motion.div
+        style={{
           x: smoothMouseX.get() * -40,
           y: smoothMouseY.get() * -30
         }}
         className="orb orb-2"
       />
-      <motion.div 
-        style={{ 
+      <motion.div
+        style={{
           x: smoothMouseX.get() * 30,
           y: smoothMouseY.get() * 50
         }}
@@ -160,6 +160,7 @@ export default function GlobalBackground() {
           0%,100% { opacity: 0.15; transform: scale(1); }
           50% { opacity: 0.7; transform: scale(1.4); }
         }
+ 
       `}</style>
     </div>
   );

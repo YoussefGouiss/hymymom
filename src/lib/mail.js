@@ -34,3 +34,51 @@ export async function sendVerificationEmail(email, name, code, type = 'verify') 
 
   return transporter.sendMail(mailOptions);
 }
+
+export async function sendVisitReminderEmail(email, userName, familyName, visitTime, address) {
+  const mailOptions = {
+    from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
+    to: email,
+    subject: `Sanctuary Alert: Visit with ${familyName} Tomorrow`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #f1f5f9; border-radius: 24px; background-color: #ffffff; color: #1e293b;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="display: inline-block; padding: 12px 24px; background-color: #f0f9ff; border-radius: 100px;">
+            <span style="color: #0369a1; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">Tomorrow's Sanctuary Visit</span>
+          </div>
+        </div>
+        
+        <h2 style="color: #0f172a; margin-top: 0; font-weight: 800; text-align: center; font-size: 24px;">Hi ${userName},</h2>
+        <p style="color: #475569; font-size: 16px; line-height: 1.6; text-align: center; margin-bottom: 30px;">
+          This is a gentle reminder from your sanctuary. You have a scheduled visit tomorrow to support <strong>${familyName}</strong>.
+        </p>
+
+        <div style="background-color: #f8fafc; border: 1px solid #f1f5f9; border-radius: 16px; padding: 24px; margin-bottom: 30px;">
+          <div style="margin-bottom: 16px;">
+            <p style="margin: 0; font-size: 10px; font-weight: 900; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em;">Time</p>
+            <p style="margin: 4px 0 0; font-size: 18px; font-weight: 700; color: #0f172a;">${visitTime}</p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 10px; font-weight: 900; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.1em;">Location</p>
+            <p style="margin: 4px 0 0; font-size: 16px; font-weight: 600; color: #334155;">${address || 'Address provided in dashboard'}</p>
+          </div>
+        </div>
+
+        <p style="color: #475569; font-size: 14px; line-height: 1.6; text-align: center;">
+          Wishing you a meaningful and supportive session. Your presence makes all the difference.
+        </p>
+        
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/visits" style="display: inline-block; padding: 14px 32px; background-color: #0f172a; color: #ffffff; text-decoration: none; border-radius: 100px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">View Visit Details</a>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 40px 0;" />
+        <p style="color: #94a3b8; font-size: 11px; text-align: center;">
+          You are receiving this because you enabled email reminders in your Practice Sanctuary settings.
+        </p>
+      </div>
+    `,
+  };
+
+  return transporter.sendMail(mailOptions);
+}

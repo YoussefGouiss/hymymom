@@ -106,7 +106,7 @@ export async function PATCH(request) {
     }
 
     // Whitelist fields to update
-    const allowedFields = ['name', 'bio', 'address', 'photo_url'];
+    const allowedFields = ['name', 'bio', 'address', 'photo_url', 'email_notifications_enabled'];
     const filteredUpdates = {};
     allowedFields.forEach(field => {
       if (updates[field] !== undefined) {

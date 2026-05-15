@@ -13,7 +13,8 @@ export default function Settings() {
     name: '',
     bio: '',
     address: '',
-    photo_url: ''
+    photo_url: '',
+    email_notifications_enabled: false
   });
 
   // Security States
@@ -29,7 +30,8 @@ export default function Settings() {
         name: user.name || '',
         bio: user.bio || '',
         address: user.address || '',
-        photo_url: user.photo_url || ''
+        photo_url: user.photo_url || '',
+        email_notifications_enabled: user.email_notifications_enabled ?? true
       });
     }
   }, [user]);
@@ -71,6 +73,30 @@ export default function Settings() {
     setMessage({ type: 'success', text: 'Logo removed! Click update to save permanently.' });
   };
 
+  const handleUpdateProfileDirect = async (updatedProfile) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      
+      const response = await fetch('/api/me', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedProfile)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('user', JSON.stringify(data));
+        setAuthState(token, data);
+      }
+    } catch (error) {
+      console.error('Direct update error:', error);
+    }
+  };
+
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -92,7 +118,8 @@ export default function Settings() {
           name: profile.name,
           bio: profile.bio,
           address: profile.address,
-          photo_url: profile.photo_url
+          photo_url: profile.photo_url,
+          email_notifications_enabled: profile.email_notifications_enabled
         })
       });
 
@@ -320,10 +347,31 @@ export default function Settings() {
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500">
                 <span className="material-symbols-outlined">security</span>
               </div>
-              <h4 className="font-bold text-on-surface dark:text-white">Security Center</h4>
+              <h4 className="font-bold text-on-surface dark:text-white">Security & Alerts</h4>
             </div>
 
             <div className="space-y-4">
+              <div className="flex items-center justify-between p-5 bg-surface-container-low dark:bg-white/5 rounded-2xl border border-transparent hover:border-primary/20 transition-all group">
+                <div className="flex items-center gap-3">
+                  <span className={`material-symbols-outlined transition-colors ${profile.email_notifications_enabled ? 'text-primary' : 'text-on-surface-variant/40'}`}>notifications_active</span>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant dark:text-slate-300">Email Reminders</p>
+                    <p className="text-[8px] text-slate-500 uppercase tracking-tighter">24h Visit Alerts</p>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    const newVal = !profile.email_notifications_enabled;
+                    setProfile({...profile, email_notifications_enabled: newVal});
+                    // Proactively save this specific setting
+                    handleUpdateProfileDirect({...profile, email_notifications_enabled: newVal});
+                  }}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${profile.email_notifications_enabled ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'}`}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${profile.email_notifications_enabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
               <button 
                 onClick={() => setIsSecurityModalOpen(true)}
                 className="w-full flex items-center justify-between p-5 bg-surface-container-low dark:bg-white/5 rounded-2xl border border-transparent hover:border-primary/20 transition-all group"
